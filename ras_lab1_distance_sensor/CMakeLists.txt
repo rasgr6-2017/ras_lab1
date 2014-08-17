@@ -8,7 +8,7 @@ catkin_package(
   DEPENDS
   CATKIN_DEPENDS roscpp std_msgs
   INCLUDE_DIRS include 
-  LIBRARIES 
+  LIBRARIES distance_sensor
 )
 
 include_directories(
@@ -22,10 +22,12 @@ add_custom_target(
   COMMAND cmake -E copy ${PROJECT_SOURCE_DIR}/lib/libdistance_sensor.so ${CATKIN_DEVEL_PREFIX}/${CATKIN_GLOBAL_LIB_DESTINATION}/libdistance_sensor.so
 )
 
-link_directories(${CATKIN_DEVEL_PREFIX}/${CATKIN_GLOBAL_LIB_DESTINATION})
+add_library(distance_sensor SHARED)
+set_target_properties(distance_sensor PROPERTIES LINKER_LANGUAGE CXX)
+add_dependencies(distance_sensor copy_distance_sensor)
 
 add_executable(distance_sensor_test_node src/distance_sensor_test_node.cpp)
-add_dependencies(distance_sensor_test_node copy_distance_sensor_lib)
+add_dependencies(distance_sensor_test_node distance_sensor)
 target_link_libraries(distance_sensor_test_node ${catkin_LIBRARIES} ${Boost_LIBRARIES} distance_sensor)
 
 install(TARGETS distance_sensor_test_node
