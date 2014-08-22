@@ -44,7 +44,7 @@
 class DistanceSensor
 {
 public:
-    DistanceSensor(double noise_stdev);
+    DistanceSensor();
 
     virtual ~DistanceSensor();
 

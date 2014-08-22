@@ -57,14 +57,9 @@ public:
         delete distance_sensor_;
     }
 
-    void getROSParameters()
-    {
-        n_.param("noise_stdev", noise_stdev_, 0.1);
-    }
-
     void init()
     {
-        distance_sensor_ = new DistanceSensor(noise_stdev_);
+        distance_sensor_ = new DistanceSensor();
         distance_subscriber_ = n_.subscribe("distance", 1, &DistanceSensorTestNode::topicCallbackDistance, this);
         sensor_value_publisher_ = n_.advertise<std_msgs::Float64>("sensor_value", 1);
     }
@@ -81,16 +76,16 @@ public:
 
 private:
 
-    double noise_stdev_;
     double distance_;
     DistanceSensor *distance_sensor_;
 };
 
 int main(int argc, char **argv)
 {
+    ros::init(argc, argv, "distance_sensor_test_node");
+
     DistanceSensorTestNode test_node;
 
-    test_node.getROSParameters();
 
     test_node.init();
 
