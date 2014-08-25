@@ -52,7 +52,7 @@ int main(int argc, char **argv)
     // Set up ROS.
     ros::init(argc, argv, "world_node");
     ros::NodeHandle n;
-    ros::Rate r(50); // 50 Hz
+    ros::Rate r(10); // 50 Hz
 
     // Create random number generators
     srand(time(NULL));
@@ -63,7 +63,6 @@ int main(int argc, char **argv)
     double end_y = -start_y -2*axis_intercept;
 
     ROS_INFO_STREAM("Wall position initialized to: ("<<start_x<<","<<start_y<<") and ("<<end_x<<","<<end_y<<")");
-
 
     ros::Publisher vis_pub = n.advertise<visualization_msgs::Marker>( "world_marker", 0 );
     visualization_msgs::Marker marker;
