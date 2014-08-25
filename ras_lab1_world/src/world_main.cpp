@@ -57,7 +57,6 @@ int main(int argc, char **argv)
     // Create random number generators
     srand(time(NULL));
     double axis_intercept = 0.4; // the wall will pass through (0, axis_intercept) -> make sure it is close to the robot in the beginning
-//    double start_y = (-(((double) rand() / (RAND_MAX)))-axis_intercept)*25;
     double start_y = ((double)(rand()%50)-25);
     double start_x = -100;
     double end_x = 100;
@@ -92,13 +91,9 @@ int main(int argc, char **argv)
     marker.points.push_back(startPoint);
     marker.points.push_back(endPoint);
 
-
-
     // Main loop.
     while (n.ok())
     {
-
-
         vis_pub.publish(marker);
         ros::spinOnce();
         r.sleep();
