@@ -1,0 +1,14 @@
+<launch>
+  
+  <!-- Distance sensor placement -->
+  <node pkg="tf" type="static_transform_publisher" name="distance_sensor_back_link"
+        args="0.1 -0.13 0.1 0 0 0  /base_link /distance_sensor_back_link 100" />
+  
+  <node pkg="tf" type="static_transform_publisher" name="distance_sensor_front_link"
+        args="-0.1 -0.13 0.1 0 0 0  /base_link /distance_sensor_front_link 100" />
+  
+  <node pkg="ras_lab1_distance_sensor" type="generate_distance_node" name="generate_distance_node"/>
+
+<!-- TODO Could instead store these in camera_pose_calibration format for consistency
+     with user calibrations. Blocked on camera_pose_calibration having sane dependencies. -->
+</launch>

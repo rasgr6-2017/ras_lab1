@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(ras_lab1_distance_sensor)
 
-find_package(catkin REQUIRED COMPONENTS roscpp std_msgs)
+find_package(catkin REQUIRED COMPONENTS roscpp std_msgs tf)
 find_package(Boost REQUIRED COMPONENTS random)
 
 catkin_package(
@@ -29,6 +29,10 @@ add_dependencies(distance_sensor copy_distance_sensor)
 add_executable(distance_sensor_test_node src/distance_sensor_test_node.cpp)
 add_dependencies(distance_sensor_test_node distance_sensor)
 target_link_libraries(distance_sensor_test_node ${catkin_LIBRARIES} ${Boost_LIBRARIES} distance_sensor)
+
+add_executable(generate_distance_node src/generate_distance_node.cpp)
+add_dependencies(generate_distance_node distance_sensor)
+target_link_libraries(generate_distance_node ${catkin_LIBRARIES} ${Boost_LIBRARIES} distance_sensor)
 
 install(TARGETS distance_sensor_test_node
   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
