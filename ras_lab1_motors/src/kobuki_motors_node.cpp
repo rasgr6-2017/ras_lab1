@@ -37,6 +37,7 @@
 #include <ras_arduino_msgs/PWM.h>
 #include <ras_arduino_msgs/Encoders.h>
 #include <ras_lab1_motors/kobuki_motors.h>
+#include <geometry_msgs/Twist.h>
 #include <boost/thread.hpp>
 
 
@@ -48,6 +49,7 @@ public:
     ros::NodeHandle n_;
     ros::Subscriber pwm_subscriber_;
     ros::Publisher encoders_publisher_;
+    ros::Publisher twist_publisher_;
 
     KobukiMotorsNode()
     {
@@ -57,8 +59,12 @@ public:
         pwm_ = std::vector<int>(2, 0);
         t_pwm_ = ros::Time::now();
 
+        wheel_radius_ = 0.0352;
+        bias_ = 0.23;
+
         pwm_subscriber_ = n_.subscribe("pwm", 1, &KobukiMotorsNode::pwmCallback, this);
         encoders_publisher_ = n_.advertise<ras_arduino_msgs::Encoders>("encoders", 1);
+        twist_publisher_ = n_.advertise<geometry_msgs::Twist>("/mobile_base/commands/velocity", 1);
     }
 
     ~KobukiMotorsNode()
@@ -67,6 +73,7 @@ public:
     }
 
 
+    // [0] corresponds to left wheel, [1] corresponds to right wheel
     void pwmCallback(const ras_arduino_msgs::PWM::ConstPtr &msg)
     {
         pwm_[0] = msg->PWM1;
@@ -78,7 +85,9 @@ public:
     {
 
         ras_arduino_msgs::Encoders encoders_msg;
-        std::vector<double> angular_velocities(2, 0.0);
+
+        // [0] corresponds to left wheel, [1] corresponds to right wheel
+        std::vector<double> wheel_angular_velocities(2, 0.0);
         std::vector<int> abs_encoders(2, 0);
         std::vector<int> diff_encoders(2, 0);
 
@@ -91,7 +100,7 @@ public:
             pwm_[1] = 0;
         }
 
-        kobuki_motors_->update(pwm_, angular_velocities,
+        kobuki_motors_->update(pwm_, wheel_angular_velocities,
                                abs_encoders, diff_encoders);
 
 
@@ -106,14 +115,33 @@ public:
         encoders_publisher_.publish(encoders_msg);
 
 
-        // TODO calculate linear/angular velocities and publish
-        // to Kobuki simulation node
+        // calculate kinematics and send twist to robot simulation node
+        geometry_msgs::Twist twist_msg;
+
+        double linear_vel = (wheel_angular_velocities[1] + wheel_angular_velocities[0])*0.5*wheel_radius_;
+        double angular_vel = (wheel_angular_velocities[1] - wheel_angular_velocities[0])*wheel_radius_/bias_;
+
+        twist_msg.linear.x = linear_vel;
+        twist_msg.linear.y = 0.0;
+        twist_msg.linear.z = 0.0;
+
+        twist_msg.angular.x = 0.0;
+        twist_msg.angular.y = 0.0;
+        twist_msg.angular.z = angular_vel;
+
+        twist_publisher_.publish(twist_msg);
+
     }
 
 private:
     KobukiMotors *kobuki_motors_;
+
+    // [0] corresponds to left wheel, [1] corresponds to right wheel
     std::vector<int> pwm_;
     ros::Time t_pwm_;
+
+    double wheel_radius_;
+    double bias_;
 };
 
 

@@ -15,8 +15,10 @@
 
   <build_depend>roscpp</build_depend>
   <build_depend>ras_arduino_msgs</build_depend>
+  <build_depend>geometry_msgs</build_depend>
 
   <run_depend>roscpp</run_depend>
   <run_depend>ras_arduino_msgs</run_depend>
+  <run_depend>geometry_msgs</run_depend>
 
 </package>
