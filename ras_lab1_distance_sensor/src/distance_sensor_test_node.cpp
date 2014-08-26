@@ -35,6 +35,7 @@
 
 #include <ros/ros.h>
 #include <std_msgs/Float64.h>
+#include <ras_arduino_msgs/ADC.h>
 #include <lab1_distance_sensor/distance_sensor.h>
 
 class DistanceSensorTestNode
@@ -61,7 +62,7 @@ public:
     {
         distance_sensor_ = new DistanceSensor();
         distance_subscriber_ = n_.subscribe("distance", 1, &DistanceSensorTestNode::topicCallbackDistance, this);
-        sensor_value_publisher_ = n_.advertise<std_msgs::Float64>("sensor_value", 1);
+        sensor_value_publisher_ = n_.advertise<ras_arduino_msgs::ADC>("ADC", 1);
     }
 
     void topicCallbackDistance(const std_msgs::Float64::ConstPtr &msg)
@@ -69,9 +70,16 @@ public:
         double distance = msg->data;
         double sensor_value = distance_sensor_->sample(distance);
 
-        std_msgs::Float64 sensor_value_msg;
-        sensor_value_msg.data = sensor_value;
-        sensor_value_publisher_.publish(sensor_value_msg);
+        ras_arduino_msgs::ADC adc_msg;
+        adc_msg.ch1 = sensor_value;
+        adc_msg.ch3 = 0.0;
+        adc_msg.ch4 = 0.0;
+        adc_msg.ch5 = 0.0;
+        adc_msg.ch6 = 0.0;
+        adc_msg.ch7 = 0.0;
+        adc_msg.ch8 = 0.0;
+
+        sensor_value_publisher_.publish(adc_msg);
     }
 
 private:

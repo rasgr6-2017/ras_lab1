@@ -7,11 +7,10 @@ find_package(Boost REQUIRED COMPONENTS random)
 catkin_package(
   DEPENDS
   CATKIN_DEPENDS roscpp std_msgs
-  INCLUDE_DIRS include 
+  INCLUDE_DIRS
 )
 
 include_directories(
-  include
   ${catkin_INCLUDE_DIRS}
   ${Boost_INCLUDE_DIRS}
 )
