@@ -72,9 +72,9 @@ int main(int argc, char **argv)
     marker.id = 0;
     marker.type = visualization_msgs::Marker::LINE_STRIP;
     marker.action = visualization_msgs::Marker::ADD;
-    marker.scale.x = 0.1;
-    marker.scale.y = 0.1;
-    marker.scale.z = 0.1;
+    marker.scale.x = 0.01;
+    marker.scale.y = 0.01;
+    marker.scale.z = 10;
     marker.color.a = 1.0;
     marker.color.r = 1.0;
     marker.color.g = 1.0;
@@ -83,10 +83,12 @@ int main(int argc, char **argv)
     geometry_msgs::Point startPoint;
     startPoint.x = start_x;
     startPoint.y = start_y;
+    startPoint.z = 0.1;
 
     geometry_msgs::Point endPoint;
     endPoint.x = end_x;
     endPoint.y = end_y;
+    endPoint.z = 0.1;
     marker.points.push_back(startPoint);
     marker.points.push_back(endPoint);
 

@@ -55,12 +55,13 @@ public:
     tf::TransformListener transform_listener_;
     geometry_msgs::Point world_start_, world_end_;
     double max_sensor_range_; // in meters
-    double min_sensor_range;
+    double min_sensor_range_;
+    double sensor_height_;
     bool world_initialized_;
 
     GenerateDistanceNode()
     {
-        n_ = ros::NodeHandle("~");
+        n_ = ros::NodeHandle("");
         distance_sensor_ = NULL;
         world_initialized_ = false;
     }
@@ -76,7 +77,8 @@ public:
         world_subscriber_ = n_.subscribe("/world_marker", 1, &GenerateDistanceNode::topicCallbackWorld, this);
         dist_sensor_back_vis_pub_ = n_.advertise<visualization_msgs::MarkerArray>( "dist_sensor_markers", 0 );
         max_sensor_range_ = 0.8; // meters
-        min_sensor_range = 0.1;
+        min_sensor_range_ = 0.1;
+        sensor_height_ = 0.1;
         distance_sensor_back_pub_ = n_.advertise<std_msgs::Float64>("distance_sensor_back", 1);
         distance_sensor_front_pub_ = n_.advertise<std_msgs::Float64>("distance_sensor_front", 1);
     }
@@ -92,13 +94,17 @@ public:
             {
                 world_start_ = msg->points[0];
                 world_end_ = msg->points[1];
+                world_start_.z = sensor_height_;
+                world_end_.z = sensor_height_;
                 world_initialized_ = true;
                 ROS_INFO_STREAM("World initialized to : ("<<world_start_.x<<","<<world_start_.y<<") and ("<<world_end_.x<<","<<world_end_.y<<")");
             } else {
                 if ((world_start_.x != msg->points[0].x) || (world_end_.x != msg->points[1].x) || (world_start_.y != msg->points[0].y) || (world_end_.y != msg->points[1].y))
                 {
-                    world_start_ = msg->points[0];
+                    world_start_ = msg->points[0];                    
                     world_end_ = msg->points[1];
+                    world_start_.z = sensor_height_;
+                    world_end_.z = sensor_height_;
                     ROS_INFO_STREAM("World REinitialized to : ("<<world_start_.x<<","<<world_start_.y<<") and ("<<world_end_.x<<","<<world_end_.y<<")");
                 }
             }
@@ -122,7 +128,7 @@ public:
             geometry_msgs::PointStamped end_point;
             geometry_msgs::PointStamped end_point_out;
             end_point.point.x = 0;
-            end_point.point.y = -max_sensor_range_;;
+            end_point.point.y = -max_sensor_range_;
             end_point.header.stamp = ros::Time::now();
             end_point.header.frame_id = "/distance_sensor_back_link";
             transform_listener_.transformPoint("odom",transform_back_sensor.stamp_,end_point,"/distance_sensor_back_link",end_point_out);
@@ -137,11 +143,13 @@ public:
 
             geometry_msgs::Point intersection_point;
             bool intersected = segment_intersection(world_start_,world_end_,start_point_out.point,end_point_out.point,intersection_point);
+
             if (intersected)
             {
+                intersection_point.z = sensor_height_;
                 // publish distance
                 double distance = point_distance(start_point_out.point,intersection_point);
-                if ((distance > min_sensor_range) && (distance < max_sensor_range_))
+                if ((distance > min_sensor_range_) && (distance < max_sensor_range_))
                 {
                     double sensor_value = distance_sensor_->sample(distance);
                     std_msgs::Float64 sensor_value_msg;
@@ -181,15 +189,16 @@ public:
             intersected = segment_intersection(world_start_,world_end_,start_point_out.point,end_point_out.point,intersection_point);
             if (intersected)
             {
+                 intersection_point.z = sensor_height_;
                 // publish distance
                 double distance = point_distance(start_point_out.point,intersection_point);
-                if ((distance > min_sensor_range) && (distance < max_sensor_range_))
+                if ((distance > min_sensor_range_) && (distance < max_sensor_range_))
                 {
 
                     double sensor_value = distance_sensor_->sample(distance);
                     std_msgs::Float64 sensor_value_msg;
                     sensor_value_msg.data = sensor_value;
-                    distance_sensor_back_pub_.publish(sensor_value_msg);
+                    distance_sensor_front_pub_.publish(sensor_value_msg);
 
                     // marker
                     visualization_msgs::Marker marker;
