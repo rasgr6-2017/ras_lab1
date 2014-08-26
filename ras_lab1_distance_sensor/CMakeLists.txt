@@ -1,12 +1,12 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(ras_lab1_distance_sensor)
 
-find_package(catkin REQUIRED COMPONENTS roscpp std_msgs)
+find_package(catkin REQUIRED COMPONENTS roscpp std_msgs ras_arduino_msgs)
 find_package(Boost REQUIRED COMPONENTS random)
 
 catkin_package(
-  DEPENDS
-  CATKIN_DEPENDS roscpp std_msgs
+  DEPENDS boost
+  CATKIN_DEPENDS roscpp std_msgs ras_arduino_msgs
   INCLUDE_DIRS include 
   LIBRARIES distance_sensor
 )
@@ -24,7 +24,7 @@ add_custom_target(
 
 add_library(distance_sensor SHARED)
 set_target_properties(distance_sensor PROPERTIES LINKER_LANGUAGE CXX)
-add_dependencies(distance_sensor copy_distance_sensor)
+add_dependencies(distance_sensor copy_distance_sensor_lib)
 
 add_executable(distance_sensor_test_node src/distance_sensor_test_node.cpp)
 add_dependencies(distance_sensor_test_node distance_sensor)

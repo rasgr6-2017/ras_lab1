@@ -1,8 +1,8 @@
 /*
- *  distance_sensor.h
+ *  kobuki_motors.h
  *
  *
- *  Created on: Aug 1, 2014
+ *  Created on: Aug 25, 2014
  *  Authors:   Francisco Viña
  *            fevb <at> kth.se
  */
@@ -33,24 +33,34 @@
    SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#ifndef KOBUKI_MOTORS_H_
+#define KOBUKI_MOTORS_H_
 
-#ifndef DISTANCE_SENSOR_H_
-#define DISTANCE_SENSOR_H_
-
+#include <vector>
 #include <boost/random/mersenne_twister.hpp>
 #include <boost/random/normal_distribution.hpp>
 #include <boost/random/variate_generator.hpp>
 
-class DistanceSensor
+
+class KobukiMotors
 {
 public:
-    DistanceSensor();
+    KobukiMotors();
 
-    virtual ~DistanceSensor();
+    virtual ~KobukiMotors();
 
-    // returns voltage measured by the sensor
-    // for a given distance (measured in meters)
-    double sample(double distance);
+    //    updates kobuki motors
+    //    input: size 2 vector of pwm signals (signal range between -255 and 255)
+    //           pwm[0] --> left wheel
+    //           pwm[1] --> right wheel
+    //    output: size 2 (0: left wheel, 1: right wheel)
+    //            angular_velocities: angular velocities of each wheel [rad]
+    //            abs_encoders: absolute encoder values for each wheel
+    //            diff_encoders: differential encoder values for each wheel
+    void update(const std::vector<int> &pwm,
+                std::vector<double> &angular_velocities,
+                std::vector<int> &abs_encoders,
+                std::vector<int> &diff_encoders);
 
 private:
 
@@ -58,6 +68,9 @@ private:
     boost::mt19937 eng_;
     boost::normal_distribution<double> noise_distribution_;
     boost::variate_generator< boost::mt19937, boost::normal_distribution<double> > generator_;
+
+    // stored absolute encoder values
+    std::vector<int> abs_encoders_;
 };
 
 #endif
