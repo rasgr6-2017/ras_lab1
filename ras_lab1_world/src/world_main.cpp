@@ -65,30 +65,29 @@ int main(int argc, char **argv)
     pose.M = KDL::Rotation::RotZ(angle_z);
     pose.p = KDL::Vector(0.0, 0.4+0.23/2, 0.1);
 
-    ros::Publisher vis_pub = n.advertise<visualization_msgs::Marker>( "world_marker", 0 );
-    visualization_msgs::Marker marker;
-    marker.header.frame_id = "odom";
-    marker.header.stamp = ros::Time();
-    marker.ns = "world";
-    marker.id = 0;
-    marker.type = visualization_msgs::Marker::CUBE;
-    marker.action = visualization_msgs::Marker::ADD;
-    marker.scale.x = 80.0;
-    marker.scale.y = 0.01;
-    marker.scale.z = 0.2;
-    marker.color.a = 1.0;
-    marker.color.r = (255.0/255.0);
-    marker.color.g = (0.0/255.0);
-    marker.color.b = (0.0/255.0);
+    ros::Publisher vis_pub = n.advertise<visualization_msgs::Marker>( "wall_marker", 0 );
+    visualization_msgs::Marker wall_marker;
+    wall_marker.header.frame_id = "odom";
+    wall_marker.header.stamp = ros::Time();
+    wall_marker.ns = "world";
+    wall_marker.id = 0;
+    wall_marker.type = visualization_msgs::Marker::CUBE;
+    wall_marker.action = visualization_msgs::Marker::ADD;
+    wall_marker.scale.x = 500.0;
+    wall_marker.scale.y = 0.01;
+    wall_marker.scale.z = 0.2;
+    wall_marker.color.a = 1.0;
+    wall_marker.color.r = (255.0/255.0);
+    wall_marker.color.g = (0.0/255.0);
+    wall_marker.color.b = (0.0/255.0);
 
 
-    tf::poseKDLToMsg(pose, marker.pose);
-
+    tf::poseKDLToMsg(pose, wall_marker.pose);
 
     // Main loop.
     while (n.ok())
     {
-        vis_pub.publish(marker);
+        vis_pub.publish(wall_marker);
         ros::spinOnce();
         r.sleep();
     }

@@ -40,6 +40,8 @@
 #include <visualization_msgs/MarkerArray.h>
 #include <std_msgs/Float64.h>
 #include <algorithm>
+#include <kdl/frames.hpp>
+#include <kdl_conversions/kdl_msg.h>
 
 #include <lab1_distance_sensor/distance_sensor.h>
 
@@ -53,17 +55,17 @@ public:
     ros::Subscriber world_subscriber_;
     ros::Publisher dist_sensor_back_vis_pub_, distance_sensor_back_pub_, distance_sensor_front_pub_;
     tf::TransformListener transform_listener_;
-    geometry_msgs::Point world_start_, world_end_;
+    geometry_msgs::Point wall_start_, wall_end_;
     double max_sensor_range_; // in meters
     double min_sensor_range_;
     double sensor_height_;
-    bool world_initialized_;
+    bool wall_initialized_;
 
     GenerateDistanceNode()
     {
         n_ = ros::NodeHandle("");
         distance_sensor_ = NULL;
-        world_initialized_ = false;
+        wall_initialized_ = false;
     }
 
     ~GenerateDistanceNode()
@@ -74,7 +76,7 @@ public:
     void init()
     {
         distance_sensor_ = new DistanceSensor();
-        world_subscriber_ = n_.subscribe("/world_marker", 1, &GenerateDistanceNode::topicCallbackWorld, this);
+        world_subscriber_ = n_.subscribe("/wall_marker", 1, &GenerateDistanceNode::topicCallbackWallMarker, this);
         dist_sensor_back_vis_pub_ = n_.advertise<visualization_msgs::MarkerArray>( "dist_sensor_markers", 0 );
         max_sensor_range_ = 0.8; // meters
         min_sensor_range_ = 0.1;
@@ -83,31 +85,27 @@ public:
         distance_sensor_front_pub_ = n_.advertise<std_msgs::Float64>("distance_sensor_front", 1);
     }
 
-    void topicCallbackWorld(const visualization_msgs::Marker::ConstPtr &msg)
+    void topicCallbackWallMarker(const visualization_msgs::Marker::ConstPtr &msg)
     {
-        if (msg->points.size() < 2)
+
+        if (!wall_initialized_)
         {
-            ROS_ERROR("world_marker message does not contain enough points");
-            return;
-        } else {
-            if (!world_initialized_)
-            {
-                world_start_ = msg->points[0];
-                world_end_ = msg->points[1];
-                world_start_.z = sensor_height_;
-                world_end_.z = sensor_height_;
-                world_initialized_ = true;
-                ROS_INFO_STREAM("World initialized to : ("<<world_start_.x<<","<<world_start_.y<<") and ("<<world_end_.x<<","<<world_end_.y<<")");
-            } else {
-                if ((world_start_.x != msg->points[0].x) || (world_end_.x != msg->points[1].x) || (world_start_.y != msg->points[0].y) || (world_end_.y != msg->points[1].y))
-                {
-                    world_start_ = msg->points[0];                    
-                    world_end_ = msg->points[1];
-                    world_start_.z = sensor_height_;
-                    world_end_.z = sensor_height_;
-                    ROS_INFO_STREAM("World REinitialized to : ("<<world_start_.x<<","<<world_start_.y<<") and ("<<world_end_.x<<","<<world_end_.y<<")");
-                }
-            }
+            wall_initialized_ = true;
+            KDL::Frame wall_start_point;
+            wall_start_point.p = KDL::Vector(-200.0, 0.0, 0.0);
+            wall_start_point.M = KDL::Rotation::Identity();
+
+            KDL::Frame wall_end_point;
+            wall_end_point.p = KDL::Vector(200.0, 0.0, 0.0);
+            wall_end_point.M = KDL::Rotation::Identity();
+
+            KDL::Frame wall_pose;
+            tf::poseMsgToKDL(msg->pose, wall_pose);
+
+            tf::pointKDLToMsg((wall_pose*wall_start_point).p, wall_start_);
+            tf::pointKDLToMsg((wall_pose*wall_end_point).p, wall_end_);
+
+            ROS_INFO("Wall initialized");
         }
     }
 
@@ -142,7 +140,7 @@ public:
             transform_listener_.transformPoint("odom",transform_back_sensor.stamp_,start_point,"/distance_sensor_back_link",start_point_out);
 
             geometry_msgs::Point intersection_point;
-            bool intersected = segment_intersection(world_start_,world_end_,start_point_out.point,end_point_out.point,intersection_point);
+            bool intersected = segment_intersection(wall_start_,wall_end_,start_point_out.point,end_point_out.point,intersection_point);
 
             if (intersected)
             {
@@ -186,7 +184,7 @@ public:
             start_point.header.frame_id = "/distance_sensor_front_link";
             transform_listener_.transformPoint("odom",transform_front_sensor.stamp_,start_point,"/distance_sensor_front_link",start_point_out);
 
-            intersected = segment_intersection(world_start_,world_end_,start_point_out.point,end_point_out.point,intersection_point);
+            intersected = segment_intersection(wall_start_,wall_end_,start_point_out.point,end_point_out.point,intersection_point);
             if (intersected)
             {
                  intersection_point.z = sensor_height_;
@@ -277,7 +275,7 @@ int main(int argc, char **argv)
     distance_node.init();
 
 
-    ros::Rate loop_rate(20.0);
+    ros::Rate loop_rate(30.0);
 
     while(distance_node.n_.ok())
     {
