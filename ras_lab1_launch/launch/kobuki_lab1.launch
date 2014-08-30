@@ -16,7 +16,7 @@
   <node pkg="ras_lab1_world" type="world_node" name="world" />
 
   <!-- run rviz -->
-  <node pkg="rviz" type="rviz" name="rviz" />
+  <node pkg="rviz" type="rviz" name="rviz" args="-d $(find ras_lab1_launch)/config/lab1.rviz" />
 
 
 </launch>
