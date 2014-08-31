@@ -39,6 +39,8 @@
 #include <ros/time.h>
 #include <visualization_msgs/Marker.h>
 #include <geometry_msgs/Point.h>
+#include <kdl/frames.hpp>
+#include <kdl_conversions/kdl_msg.h>
 
 // Boost includes
 #include <stdio.h>
@@ -56,46 +58,36 @@ int main(int argc, char **argv)
 
     // Create random number generators
     srand(time(NULL));
-    double axis_intercept = 0.4; // the wall will pass through (0, axis_intercept) -> make sure it is close to the robot in the beginning
-    double start_y = ((double)(rand()%50)-25);
-    double start_x = -100;
-    double end_x = 100;
-    double end_y = -start_y -2*axis_intercept;
+    double angle_z = ((double)(rand()%40)-20)*M_PI/180.0;
+    if(angle_z <= 5*M_PI/180.0) angle_z += 5*M_PI/180.0;
 
-    ROS_INFO_STREAM("Wall position initialized to: ("<<start_x<<","<<start_y<<") and ("<<end_x<<","<<end_y<<")");
+    KDL::Frame pose;
+    pose.M = KDL::Rotation::RotZ(angle_z);
+    pose.p = KDL::Vector(0.0, 0.4+0.23/2, 0.1);
 
-    ros::Publisher vis_pub = n.advertise<visualization_msgs::Marker>( "world_marker", 0 );
-    visualization_msgs::Marker marker;
-    marker.header.frame_id = "odom";
-    marker.header.stamp = ros::Time();
-    marker.ns = "world";
-    marker.id = 0;
-    marker.type = visualization_msgs::Marker::LINE_STRIP;
-    marker.action = visualization_msgs::Marker::ADD;
-    marker.scale.x = 0.01;
-    marker.scale.y = 0.01;
-    marker.scale.z = 10;
-    marker.color.a = 1.0;
-    marker.color.r = 1.0;
-    marker.color.g = 1.0;
-    marker.color.b = 0.0;
+    ros::Publisher vis_pub = n.advertise<visualization_msgs::Marker>( "wall_marker", 0 );
+    visualization_msgs::Marker wall_marker;
+    wall_marker.header.frame_id = "odom";
+    wall_marker.header.stamp = ros::Time();
+    wall_marker.ns = "world";
+    wall_marker.id = 0;
+    wall_marker.type = visualization_msgs::Marker::CUBE;
+    wall_marker.action = visualization_msgs::Marker::ADD;
+    wall_marker.scale.x = 500.0;
+    wall_marker.scale.y = 0.01;
+    wall_marker.scale.z = 0.2;
+    wall_marker.color.a = 1.0;
+    wall_marker.color.r = (255.0/255.0);
+    wall_marker.color.g = (0.0/255.0);
+    wall_marker.color.b = (0.0/255.0);
 
-    geometry_msgs::Point startPoint;
-    startPoint.x = start_x;
-    startPoint.y = start_y;
-    startPoint.z = 0.1;
 
-    geometry_msgs::Point endPoint;
-    endPoint.x = end_x;
-    endPoint.y = end_y;
-    endPoint.z = 0.1;
-    marker.points.push_back(startPoint);
-    marker.points.push_back(endPoint);
+    tf::poseKDLToMsg(pose, wall_marker.pose);
 
     // Main loop.
     while (n.ok())
     {
-        vis_pub.publish(marker);
+        vis_pub.publish(wall_marker);
         ros::spinOnce();
         r.sleep();
     }
