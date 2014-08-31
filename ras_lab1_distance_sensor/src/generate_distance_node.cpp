@@ -38,7 +38,7 @@
 #include <geometry_msgs/Point.h>
 #include <visualization_msgs/Marker.h>
 #include <visualization_msgs/MarkerArray.h>
-#include <std_msgs/Float64.h>
+#include <ras_arduino_msgs/ADC.h>
 #include <algorithm>
 #include <kdl/frames.hpp>
 #include <kdl_conversions/kdl_msg.h>
@@ -53,7 +53,7 @@ public:
 
     ros::NodeHandle n_;
     ros::Subscriber world_subscriber_;
-    ros::Publisher dist_sensor_back_vis_pub_, distance_sensor_back_pub_, distance_sensor_front_pub_;
+    ros::Publisher dist_sensor_back_vis_pub_, adc_pub_;
     tf::TransformListener transform_listener_;
     geometry_msgs::Point wall_start_, wall_end_;
     double max_sensor_range_; // in meters
@@ -81,8 +81,7 @@ public:
         max_sensor_range_ = 0.8; // meters
         min_sensor_range_ = 0.1;
         sensor_height_ = 0.1;
-        distance_sensor_back_pub_ = n_.advertise<std_msgs::Float64>("distance_sensor_back", 1);
-        distance_sensor_front_pub_ = n_.advertise<std_msgs::Float64>("distance_sensor_front", 1);
+        adc_pub_ = n_.advertise<ras_arduino_msgs::ADC>("adc", 1);
     }
 
     void topicCallbackWallMarker(const visualization_msgs::Marker::ConstPtr &msg)
@@ -114,6 +113,10 @@ public:
         tf::StampedTransform transform_back_sensor;
         tf::StampedTransform transform_front_sensor;
         visualization_msgs::MarkerArray marker_array;
+        ras_arduino_msgs::ADC adc_msg;
+        adc_msg.ch1 = 0;
+        adc_msg.ch2 = 0;
+
         try {
             transform_listener_.waitForTransform("/odom", "/distance_sensor_back_link",ros::Time(0), ros::Duration(5.0) );
             transform_listener_.lookupTransform("/odom", "/distance_sensor_back_link",ros::Time(0), transform_back_sensor);
@@ -150,9 +153,7 @@ public:
                 if ((distance > min_sensor_range_) && (distance < max_sensor_range_))
                 {
                     double sensor_value = distance_sensor_->sample(distance);
-                    std_msgs::Float64 sensor_value_msg;
-                    sensor_value_msg.data = sensor_value;
-                    distance_sensor_back_pub_.publish(sensor_value_msg);
+                    adc_msg.ch2 = (unsigned int)(sensor_value*(1023/5.0));
 
                     // marker
                     visualization_msgs::Marker marker;
@@ -195,9 +196,7 @@ public:
                 {
 
                     double sensor_value = distance_sensor_->sample(distance);
-                    std_msgs::Float64 sensor_value_msg;
-                    sensor_value_msg.data = sensor_value;
-                    distance_sensor_front_pub_.publish(sensor_value_msg);
+                    adc_msg.ch1 = (unsigned int)(sensor_value*(1023/5.0));
 
                     // marker
                     visualization_msgs::Marker marker;
@@ -221,6 +220,7 @@ public:
                 }
             }
 
+            adc_pub_.publish(adc_msg);
 
             if (marker_array.markers.size() > 0)
             {

@@ -62,7 +62,7 @@ public:
     {
         distance_sensor_ = new DistanceSensor();
         distance_subscriber_ = n_.subscribe("distance", 1, &DistanceSensorTestNode::topicCallbackDistance, this);
-        sensor_value_publisher_ = n_.advertise<ras_arduino_msgs::ADC>("ADC", 1);
+        sensor_value_publisher_ = n_.advertise<ras_arduino_msgs::ADC>("adc", 1);
     }
 
     void topicCallbackDistance(const std_msgs::Float64::ConstPtr &msg)
@@ -71,7 +71,7 @@ public:
         double sensor_value = distance_sensor_->sample(distance);
 
         ras_arduino_msgs::ADC adc_msg;
-        adc_msg.ch1 = sensor_value;
+        adc_msg.ch1 = (unsigned int)(sensor_value*(1023/5.0));
         adc_msg.ch3 = 0.0;
         adc_msg.ch4 = 0.0;
         adc_msg.ch5 = 0.0;
