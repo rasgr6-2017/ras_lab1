@@ -157,7 +157,8 @@ public:
                     // marker
                     visualization_msgs::Marker marker;
                     marker.header.frame_id = "odom";
-                    marker.header.stamp = ros::Time();
+                    marker.header.stamp = ros::Time::now();
+                    marker.lifetime = ros::Duration(1/30.0);
                     marker.ns = "distance_back";
                     marker.id = 0;
                     marker.type = visualization_msgs::Marker::LINE_STRIP;
@@ -201,7 +202,8 @@ public:
                     // marker
                     visualization_msgs::Marker marker;
                     marker.header.frame_id = "odom";
-                    marker.header.stamp = ros::Time();
+                    marker.header.stamp = ros::Time::now();
+                    marker.lifetime = ros::Duration(1/30.0);
                     marker.ns = "distance_front";
                     marker.id = 1;
                     marker.type = visualization_msgs::Marker::LINE_STRIP;
