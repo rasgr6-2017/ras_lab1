@@ -59,7 +59,8 @@ int main(int argc, char **argv)
     // Create random number generators
     srand(time(NULL));
     double angle_z = ((double)(rand()%40)-20)*M_PI/180.0;
-    if(angle_z <= 5*M_PI/180.0) angle_z += 5*M_PI/180.0;
+    if(angle_z <= 5*M_PI/180.0 && angle_z >= 0.0) angle_z += 5*M_PI/180.0;
+    if(angle_z >= -5*M_PI/180.0 && angle_z <= 0.0) angle_z -= 5*M_PI/180.0;
 
     KDL::Frame pose;
     pose.M = KDL::Rotation::RotZ(angle_z);
