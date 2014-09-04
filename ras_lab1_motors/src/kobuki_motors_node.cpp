@@ -59,7 +59,7 @@ public:
         t_pwm_ = ros::Time::now();
 
         wheel_radius_ = 0.0352;
-        bias_ = 0.23;
+        base_ = 0.23;
 
         pwm_subscriber_ = n_.subscribe("pwm", 1, &KobukiMotorsNode::pwmCallback, this);
         encoders_publisher_ = n_.advertise<ras_arduino_msgs::Encoders>("encoders", 1);
@@ -118,7 +118,7 @@ public:
         geometry_msgs::Twist twist_msg;
 
         double linear_vel = (wheel_angular_velocities[1] + wheel_angular_velocities[0])*0.5*wheel_radius_;
-        double angular_vel = (wheel_angular_velocities[1] - wheel_angular_velocities[0])*wheel_radius_/bias_;
+        double angular_vel = (wheel_angular_velocities[1] - wheel_angular_velocities[0])*wheel_radius_/base_;
 
         twist_msg.linear.x = linear_vel;
         twist_msg.linear.y = 0.0;
@@ -140,7 +140,7 @@ private:
     ros::Time t_pwm_;
 
     double wheel_radius_;
-    double bias_;
+    double base_;
 };
 
 
