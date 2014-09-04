@@ -38,7 +38,6 @@
 #include <ras_arduino_msgs/Encoders.h>
 #include <ras_lab1_motors/kobuki_motors.h>
 #include <geometry_msgs/Twist.h>
-#include <boost/thread.hpp>
 
 
 

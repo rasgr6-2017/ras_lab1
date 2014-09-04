@@ -2,10 +2,9 @@ cmake_minimum_required(VERSION 2.8.3)
 project(ras_lab1_motors)
 
 find_package(catkin REQUIRED COMPONENTS roscpp ras_arduino_msgs geometry_msgs)
-find_package(Boost REQUIRED COMPONENTS random system thread)
 
 catkin_package(
-  DEPENDS boost
+  DEPENDS
   CATKIN_DEPENDS roscpp ras_arduino_msgs geometry_msgs
   INCLUDE_DIRS include 
   LIBRARIES kobuki_motors
@@ -14,7 +13,6 @@ catkin_package(
 include_directories(
   include
   ${catkin_INCLUDE_DIRS}
-  ${Boost_INCLUDE_DIRS}
 )
 
 add_custom_target(
@@ -28,7 +26,7 @@ add_dependencies(kobuki_motors copy_kobuki_motors_lib)
 
 add_executable(kobuki_motors_node src/kobuki_motors_node.cpp)
 add_dependencies(kobuki_motors_node kobuki_motors)
-target_link_libraries(kobuki_motors_node ${catkin_LIBRARIES} ${Boost_LIBRARIES} kobuki_motors)
+target_link_libraries(kobuki_motors_node ${catkin_LIBRARIES} kobuki_motors)
 
 install(TARGETS kobuki_motors_node
   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
