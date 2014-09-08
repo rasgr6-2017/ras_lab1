@@ -9,6 +9,7 @@ Panels:
         - /RobotModel1
         - /Marker1
         - /MarkerArray1
+        - /Odometry1
       Splitter Ratio: 0.5
     Tree Height: 565
   - Class: rviz/Selection
@@ -125,8 +126,19 @@ Visualization Manager:
       Marker Topic: /dist_sensor_markers
       Name: MarkerArray
       Namespaces:
-        {}
+        distance_back: true
+        distance_front: true
       Queue Size: 100
+      Value: true
+    - Angle Tolerance: 0.1
+      Class: rviz/Odometry
+      Color: 255; 25; 0
+      Enabled: true
+      Keep: 100
+      Length: 1
+      Name: Odometry
+      Position Tolerance: 0.1
+      Topic: /odom
       Value: true
   Enabled: true
   Global Options:
@@ -164,10 +176,10 @@ Visualization Manager:
         Z: 0
       Name: Current View
       Near Clip Distance: 0.01
-      Pitch: 0.909797
+      Pitch: 1.5698
       Target Frame: <Fixed Frame>
       Value: Orbit (rviz)
-      Yaw: 3.74357
+      Yaw: 3.32857
     Saved: ~
 Window Geometry:
   Displays:
