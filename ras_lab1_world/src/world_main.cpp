@@ -68,7 +68,7 @@ int main(int argc, char **argv)
 
     ros::Publisher vis_pub = n.advertise<visualization_msgs::Marker>( "wall_marker", 0 );
     visualization_msgs::Marker wall_marker;
-    wall_marker.header.frame_id = "odom";
+    wall_marker.header.frame_id = "/odom";
     wall_marker.header.stamp = ros::Time();
     wall_marker.ns = "world";
     wall_marker.id = 0;

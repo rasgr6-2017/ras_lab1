@@ -132,7 +132,7 @@ public:
             end_point.point.y = -max_sensor_range_;
             end_point.header.stamp = ros::Time::now();
             end_point.header.frame_id = "/distance_sensor_back_link";
-            transform_listener_.transformPoint("odom",transform_back_sensor.stamp_,end_point,"/distance_sensor_back_link",end_point_out);
+            transform_listener_.transformPoint("/odom",transform_back_sensor.stamp_,end_point,"/distance_sensor_back_link",end_point_out);
 
             geometry_msgs::PointStamped start_point;
             geometry_msgs::PointStamped start_point_out;
@@ -140,7 +140,7 @@ public:
             start_point.point.y = 0;
             start_point.header.stamp = ros::Time::now();
             start_point.header.frame_id = "/distance_sensor_back_link";
-            transform_listener_.transformPoint("odom",transform_back_sensor.stamp_,start_point,"/distance_sensor_back_link",start_point_out);
+            transform_listener_.transformPoint("/odom",transform_back_sensor.stamp_,start_point,"/distance_sensor_back_link",start_point_out);
 
             geometry_msgs::Point intersection_point;
             bool intersected = segment_intersection(wall_start_,wall_end_,start_point_out.point,end_point_out.point,intersection_point);
@@ -157,7 +157,7 @@ public:
 
                     // marker
                     visualization_msgs::Marker marker;
-                    marker.header.frame_id = "odom";
+                    marker.header.frame_id = "/odom";
                     marker.header.stamp = ros::Time::now();
                     marker.lifetime = ros::Duration(1/30.0);
                     marker.ns = "distance_back";
@@ -181,10 +181,10 @@ public:
             // front distance sensor
             // convert range to odom frame of ref and check for intersection
             end_point.header.frame_id = "/distance_sensor_front_link";
-            transform_listener_.transformPoint("odom",transform_front_sensor.stamp_,end_point,"/distance_sensor_front_link",end_point_out);
+            transform_listener_.transformPoint("/odom",transform_front_sensor.stamp_,end_point,"/distance_sensor_front_link",end_point_out);
 
             start_point.header.frame_id = "/distance_sensor_front_link";
-            transform_listener_.transformPoint("odom",transform_front_sensor.stamp_,start_point,"/distance_sensor_front_link",start_point_out);
+            transform_listener_.transformPoint("/odom",transform_front_sensor.stamp_,start_point,"/distance_sensor_front_link",start_point_out);
 
             intersected = segment_intersection(wall_start_,wall_end_,start_point_out.point,end_point_out.point,intersection_point);
             if (intersected)
@@ -200,7 +200,7 @@ public:
 
                     // marker
                     visualization_msgs::Marker marker;
-                    marker.header.frame_id = "odom";
+                    marker.header.frame_id = "/odom";
                     marker.header.stamp = ros::Time::now();
                     marker.lifetime = ros::Duration(1/30.0);
                     marker.ns = "distance_front";
