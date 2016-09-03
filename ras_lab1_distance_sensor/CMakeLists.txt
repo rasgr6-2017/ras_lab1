@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(ras_lab1_distance_sensor)
 
-find_package(catkin REQUIRED COMPONENTS roscpp std_msgs ras_arduino_msgs tf kdl_conversions)
+find_package(catkin REQUIRED COMPONENTS roscpp std_msgs tf kdl_conversions ras_lab1_msgs)
 find_package(Boost REQUIRED COMPONENTS random)
 find_package(orocos_kdl REQUIRED)
 
@@ -9,8 +9,8 @@ find_library(KDL_LIBRARY REQUIRED NAMES orocos-kdl HINTS ${orocos_kdl_LIBRARY_DI
 
 catkin_package(
   DEPENDS boost orocos_kdl
-  CATKIN_DEPENDS roscpp std_msgs ras_arduino_msgs tf kdl_conversions
-  INCLUDE_DIRS include 
+  CATKIN_DEPENDS roscpp std_msgs tf kdl_conversions ras_lab1_msgs
+  INCLUDE_DIRS include
   LIBRARIES distance_sensor
 )
 

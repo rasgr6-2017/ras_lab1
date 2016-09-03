@@ -1,12 +1,12 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(ras_lab1_motors)
 
-find_package(catkin REQUIRED COMPONENTS roscpp ras_arduino_msgs geometry_msgs)
+find_package(catkin REQUIRED COMPONENTS roscpp geometry_msgs ras_lab1_msgs)
 
 catkin_package(
   DEPENDS
-  CATKIN_DEPENDS roscpp ras_arduino_msgs geometry_msgs
-  INCLUDE_DIRS include 
+  CATKIN_DEPENDS roscpp geometry_msgs ras_lab1_msgs
+  INCLUDE_DIRS include
   LIBRARIES kobuki_motors
 )
 

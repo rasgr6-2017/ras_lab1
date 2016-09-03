@@ -38,7 +38,7 @@
 #include <geometry_msgs/Point.h>
 #include <visualization_msgs/Marker.h>
 #include <visualization_msgs/MarkerArray.h>
-#include <ras_arduino_msgs/ADConverter.h>
+#include <ras_lab1_msgs/ADConverter.h>
 #include <algorithm>
 #include <kdl/frames.hpp>
 #include <kdl_conversions/kdl_msg.h>
@@ -81,7 +81,7 @@ public:
         max_sensor_range_ = 0.8; // meters
         min_sensor_range_ = 0.1;
         sensor_height_ = 0.1;
-        adc_pub_ = n_.advertise<ras_arduino_msgs::ADConverter>("adc", 1);
+        adc_pub_ = n_.advertise<ras_lab1_msgs::ADConverter>("adc", 1);
     }
 
     void topicCallbackWallMarker(const visualization_msgs::Marker::ConstPtr &msg)
@@ -113,7 +113,7 @@ public:
         tf::StampedTransform transform_back_sensor;
         tf::StampedTransform transform_front_sensor;
         visualization_msgs::MarkerArray marker_array;
-        ras_arduino_msgs::ADConverter adc_msg;
+        ras_lab1_msgs::ADConverter adc_msg;
         adc_msg.ch1 = 0;
         adc_msg.ch2 = 0;
 

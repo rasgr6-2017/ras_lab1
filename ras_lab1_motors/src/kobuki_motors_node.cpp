@@ -34,8 +34,8 @@
 */
 
 #include <ros/ros.h>
-#include <ras_arduino_msgs/PWM.h>
-#include <ras_arduino_msgs/Encoders.h>
+#include <ras_lab1_msgs/PWM.h>
+#include <ras_lab1_msgs/Encoders.h>
 #include <ras_lab1_motors/kobuki_motors.h>
 #include <geometry_msgs/Twist.h>
 
@@ -62,7 +62,7 @@ public:
         base_ = 0.23;
 
         pwm_subscriber_ = n_.subscribe("pwm", 1, &KobukiMotorsNode::pwmCallback, this);
-        encoders_publisher_ = n_.advertise<ras_arduino_msgs::Encoders>("encoders", 1);
+        encoders_publisher_ = n_.advertise<ras_lab1_msgs::Encoders>("encoders", 1);
         twist_publisher_ = n_.advertise<geometry_msgs::Twist>("/mobile_base/commands/velocity", 1);
     }
 
@@ -73,7 +73,7 @@ public:
 
 
     // [0] corresponds to left wheel, [1] corresponds to right wheel
-    void pwmCallback(const ras_arduino_msgs::PWM::ConstPtr &msg)
+    void pwmCallback(const ras_lab1_msgs::PWM::ConstPtr &msg)
     {
         pwm_[0] = msg->PWM1;
         pwm_[1] = msg->PWM2;
@@ -83,7 +83,7 @@ public:
     void updateMotors()
     {
 
-        ras_arduino_msgs::Encoders encoders_msg;
+        ras_lab1_msgs::Encoders encoders_msg;
 
         // [0] corresponds to left wheel, [1] corresponds to right wheel
         std::vector<double> wheel_angular_velocities(2, 0.0);
